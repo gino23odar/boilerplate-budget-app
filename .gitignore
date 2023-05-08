@@ -1,0 +1,7 @@
+.env
+/venv
+.replit
+/replit.nix
+.upm
+.config
+/__pycache__
