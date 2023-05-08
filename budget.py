@@ -51,4 +51,67 @@ class Category:
      
 
 def create_spend_chart(categories):
-    return 
+    values = []  
+  # get the value for each category 
+    for cat in categories:
+        total = 0
+        for withdrawal in cat.ledger:
+            if withdrawal['amount'] < 0:
+                total += withdrawal['amount']
+        values.append(total)
+
+    total_neg = sum(values)
+
+  # round the values to get the number of dots in chart
+    def o_amount(x):
+        portion = x/total_neg * 10
+        rounded_down = int(portion) *10
+        return rounded_down
+
+    chart_values = list(map(o_amount, values))
+
+  # function to sketch the chart
+    def create_chart(vals):
+        chart_str = ""
+        for i in range(100, -10, -10):
+            if i == 100:
+                chart_str += "100| "
+            elif i == 0:
+                chart_str += "  0| "
+            else:
+                chart_str += str(i).rjust(3) + "| "
+    
+            for value in vals:
+                if value >= i:
+                    chart_str += "o  "
+                else:
+                    chart_str += "   "
+    
+            chart_str += "\n"
+    
+        chart_str += "    " + "-" * (len(vals) * 3 + 1) + "\n"
+        chart_str += "    "
+    
+        return chart_str
+
+  # add the names of the categories
+    names = []
+    for cat in categories:
+      names.append(cat.name)
+    max_length = max(len(string) for string in names)
+
+    output = ''
+    
+    # Iterate over each string and each character in each string and add it to the output string
+    for i in range(max_length):
+        output += ' '
+        for string in names:
+            if i < len(string):
+                output += string[i] + '  '
+            else:
+                output += '   '
+        output += '\n' + ' '*4
+
+    chart = 'Percentage spent by category\n' + create_chart(chart_values) + output.rstrip()
+
+    return chart
